@@ -11,16 +11,40 @@
           rel="stylesheet">
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- /meta tags -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
     <title>Nucleo de Diagnóstico RH</title>
     <link rel="icon" href="https://files.nucleodediagnostico.mx/img/NucleoRH.png" type="image/icon type">
 
-    <link rel="stylesheet" href="~/css/styles.nucleorh.css">
-    
-  
-    
+    <link rel="stylesheet" href="~/css/lite-style-1.min.css">
+    <link rel="stylesheet" href="~/lib/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="~/vendors/gaxon-icon/style.css">
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/css/perfect-scrollbar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="~/lib/toastr/toastr.min.css">
+    <link href="~/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+
+
+
+    <style>
+        .numerico {
+            text-align: right;
+        }
+    </style>
+    <style>
+        .LogOut{
+            text-align: right;
+        }
+    </style>
 </head>
 <body class="dt-sidebar--fixed dt-header--fixed">
     <!-- Loader -->
@@ -41,10 +65,17 @@
             <div class="dt-header__container">
                 <!-- Brand -->
                 <div class="dt-brand">
+
+                    <!-- Brand tool -->
+                    <div class="dt-brand__tool" data-toggle="main-sidebar">
+                        <i class="icon icon-xl icon-menu-fold d-none d-lg-inline-block"></i>
+                        <i class="icon icon-xl icon-menu d-lg-none"></i>
+                    </div>
+                    <!-- /brand tool -->
                     <!-- Brand logo -->
                     <span class="dt-brand__logo">
                         <a class="dt-brand__logo-link" href="/">
-                            <img class="dt-brand__logo-img d-lg-inline-block p-1" src="https://files.nucleodediagnostico.mx/img/CapitalHumano.svg" alt="NucleoRH">
+                            <img class="dt-brand__logo-img d-none d-lg-inline-block p-1" src="https://files.nucleodediagnostico.mx/img/CapitalHumano.svg" alt="NucleoRH">
                         </a>
                     </span>
                     <!-- /brand logo -->
@@ -62,137 +93,143 @@
         <main class="dt-main">
             <aside id="main-sidebar" class="dt-sidebar">
                 <div class="dt-sidebar__container">
+                    <!-- Sidebar Notification -->
+                    <div class="dt-sidebar__notification  d-none d-lg-block">
+                        <!-- Dropdown -->
+                        <div class="dropdown mb-6" id="user-menu-dropdown">
+                            @*<partial name="_LoginPartial.cshtml" />*@
+                        </div>
+                    </div>
+                    <!-- /sidebar notification -->
 
 
 
                     <!-- Sidebar Navigation -->
+                    <ul class="dt-side-nav">
                         <!-- Menu Header -->
-                        <p class="dt-side-nav__item dt-side-nav__header" ><font color="Black" class="mx-auto" id="EmpleadoLogeado"></font><br /> <font color="red" class="mx-auto" id="Nomina"></font></p>
+                        <li class="dt-side-nav__item dt-side-nav__header" ><font color="Black" class="mx-auto" id="EmpleadoLogeado"></font><br /> <font color="red" class="mx-auto" id="Nomina"></font></li>
                         
 
-                        <p class="dt-side-nav__item dt-side-nav__header">
+                        <li class="dt-side-nav__item dt-side-nav__header">
                             <span class="dt-side-nav__text">Principal</span>
-                        </p>
+                        </li>
             
-            <div class="dt-side-nav">
-                <button class="dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="bi bi-gear-wide-connected"></i> Administración
-                </button>
-                <ul class="dt-side-nav">
-                    <li class='dt-side-nav__item' name='ADMINISTRACIÓN' id="Menu2">
-                        <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Administración'> <i class="bi bi-gear-wide-connected"></i> <span class='dt-side-nav__text'>Administración</span></a>
-                        <ul class='dt-side-nav__sub-menu'>
-                            <li class='dt-side-nav__item' id="SubMenu1020" >
-                                <a href='/AltaUsuarios' class='dt-side-nav__link' title='Gestión de Usuarios'> <span class='dt-side-nav__text'>Usuarios</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu1021">
-                                <a href='/RolesUsuarios' class='dt-side-nav__link' title='Gestión de Perfiles de Usuario'> <span class='dt-side-nav__text'>Perfiles de usuario</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu15">
-                                <a href='/UsuariosPermisos' class='dt-side-nav__link' title='Administración de Permisos'> <span class='dt-side-nav__text'>Permisos</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu16">
-                                <a href='/Modulos' class='dt-side-nav__link' title='Módulos'> <span class='dt-side-nav__text'>Módulos</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubModulos17">
-                                <a href='/SubModulos' class='dt-side-nav__link' title='Submódulos'> <span class='dt-side-nav__text'>Submódulos</span> </a>
-                            </li><li class='dt-side-nav__item' id="SubModulos2023">
-                                <a href='/EmpTrazabilidad' class='dt-side-nav__link' title='Trazabilidad'> <span class='dt-side-nav__text'>Trazabilidad</span> </a>
-                            </li>
-                        </ul>
+            
+            <li class='dt-side-nav__item' name='ADMINISTRACIÓN' id="Menu2">
+                <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Administración'> <i class='icon icon-extra-components icon-fw icon-xl'></i><span class='dt-side-nav__text'>Administración</span></a>
+                <ul class='dt-side-nav__sub-menu'>
+                    <li class='dt-side-nav__item' id="SubMenu1020" >
+                        <a href='/AltaUsuarios' class='dt-side-nav__link' title='Gestión de Usuarios'> <span class='dt-side-nav__text'>Usuarios</span> </a>
                     </li>
-           
-                    <li class='dt-side-nav__item' name='Catálogos' id="Menu7">
-                        <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Catálogos'> <i class="bi bi-cart4"></i><span class='dt-side-nav__text'>Catálogos</span></a>
-                        <ul class='dt-side-nav__sub-menu'>
-                            <li class='dt-side-nav__item' id="SubMenu6">
-                                <a href='/Departamentos' class='dt-side-nav__link' title='Departamentos'> <span class='dt-side-nav__text'>Departamentos</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu4">
-                                <a href='/Areas' class='dt-side-nav__link' title='Areas'> <span class='dt-side-nav__text'>Áreas</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu7">
-                                <a href='/Sucursales' class='dt-side-nav__link' title='Sucursales'> <span class='dt-side-nav__text'>Sucursales</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu8">
-                                <a href='/Puestos' class='dt-side-nav__link' title='Puestos'> <span class='dt-side-nav__text'>Puestos</span> </a>
-                            </li>
-                            @*<li class='dt-side-nav__item' >
-                                <a href='/Insumos' class='dt-side-nav__link' title='Horarios'> <span class='dt-side-nav__text'>Horarios</span> </a>
-                            </li>*@
-                            <li class='dt-side-nav__item' id="SubMenu21">
-                                <a href='/Incidencias' class='dt-side-nav__link' title='Incidencias'> <span class='dt-side-nav__text'>Incidencias</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu1019">
-                                <a href='/Periodos' class='dt-side-nav__link' title='Periodos'> <span class='dt-side-nav__text'>Periodos</span> </a>
-                            </li>
-                            @*<li class='dt-side-nav__item'>
-                                <a href='/Insumos' class='dt-side-nav__link' title='Festivos'> <span class='dt-side-nav__text'>Festivos</span> </a>
-                            </li>*@
-                        </ul>
+                    <li class='dt-side-nav__item' id="SubMenu1021">
+                        <a href='/RolesUsuarios' class='dt-side-nav__link' title='Gestión de Perfiles de Usuario'> <span class='dt-side-nav__text'>Perfiles de usuario</span> </a>
                     </li>
-                    <li class='dt-side-nav__item' name='Empleados' id="Menu5">
-                        <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' > <i class="bi bi-person-video2"></i><span class='dt-side-nav__text'>Empleados</span></a>
-                        <ul class='dt-side-nav__sub-menu'>
-                            <li class='dt-side-nav__item' id="SubMenu10">
-                                <a href='/Empleados' class='dt-side-nav__link' title='Catálogo de Empleados'> <span class='dt-side-nav__text'>Catálogo de Empleados</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu11">
-                                <a href='/CatRegistroIncidencias' class='dt-side-nav__link' title='Registro de Incidencias'> <span class='dt-side-nav__text'>Registro de Incidencias</span> </a>
-                            </li>
-                    
-                            <li class='dt-side-nav__item' id="SubMenu12">
-                                <a href='/MovEmpleadosHorarios' class='dt-side-nav__link' title='Movimientos Horarios'> <span class='dt-side-nav__text'>Movimientos de Horarios</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item' id="SubMenu13">
-                                <a href='/HistorialVacaciones' class='dt-side-nav__link' title='Historial Vacaciones'> <span class='dt-side-nav__text'>Historial de Vacaciones</span> </a>
-                            </li>
-                    
-
-                        </ul>
+                    <li class='dt-side-nav__item' id="SubMenu15">
+                        <a href='/UsuariosPermisos' class='dt-side-nav__link' title='Administración de Permisos'> <span class='dt-side-nav__text'>Permisos</span> </a>
                     </li>
-                    <li class='dt-side-nav__item' name='Reportes' id="Menu3">
-                        <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Produccion'> <i class="bi bi-file-earmark-spreadsheet-fill"></i> <span class='dt-side-nav__text'>Reportes</span></a>
-                        <ul class='dt-side-nav__sub-menu'>
-                            @*<li class='dt-side-nav__item'>
-                                <a href='/PropuestaProduccion' class='dt-side-nav__link' title='Asistencia'> <span class='dt-side-nav__text'>Asistencias</span> </a>
-                            </li>*@
-                            <li class='dt-side-nav__item' id="SubMenu20">
-                                <a href='/Reportes' class='dt-side-nav__link' title='Incidencias'> <span class='dt-side-nav__text'>Reporte de permisos</span> </a>
-                            </li>
-                            @*<li class='dt-side-nav__item'>
-                                <a href='/Produccion' class='dt-side-nav__link' title='Cumpleaños'> <span class='dt-side-nav__text'>Cumpleaños</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item'>
-                                <a href='/Produccion' class='dt-side-nav__link' title='Incidencias'> <span class='dt-side-nav__text'>Incidencias</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item'>
-                                <a href='/Produccion' class='dt-side-nav__link' title='Ingresos'> <span class='dt-side-nav__text'>Ingresos</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item'>
-                                <a href='/Produccion' class='dt-side-nav__link' title='Antiguedad'> <span class='dt-side-nav__text'>Antiguedad</span> </a>
-                            </li>*@
-                        </ul>
+                    <li class='dt-side-nav__item' id="SubMenu16">
+                        <a href='/Modulos' class='dt-side-nav__link' title='Módulos'> <span class='dt-side-nav__text'>Módulos</span> </a>
                     </li>
-                    <li class='dt-side-nav__item' name='Capital Humano' id="Menu4">
-                        <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Capital Humano'> <i class="bi bi-people-fill"></i> <span class='dt-side-nav__text'>Capital Humano</span></a>
-                        <ul class='dt-side-nav__sub-menu'>
-                            <li class='dt-side-nav__item'>
-                                <a href='/Plantilla' class='dt-side-nav__link' title='Administración de Plantillas'> <span class='dt-side-nav__text'>Plantillas</span> </a>
-                            </li>
-                            <li class='dt-side-nav__item'>
-                                <a href='/RequisicionPersonal' class='dt-side-nav__link' title='Requisiciones de personal'> <span class='dt-side-nav__text'>Requisición de personal</span> </a>
-                            </li>
-                            @*<li class='dt-side-nav__item'>
-                                <a href='/Requisiciones/Cotizaciones' class='dt-side-nav__link' title='Gafete'> <span class='dt-side-nav__text'>Gafete</span> </a>
-                            </li>*@
-                            <li class='dt-side-nav__item'>
-                                <a href='/Organigrama' class='dt-side-nav__link' title='Organigrama'> <span class='dt-side-nav__text'>Organigrama</span> </a>
-                            </li>
-                        </ul>
+                    <li class='dt-side-nav__item' id="SubModulos17">
+                        <a href='/SubModulos' class='dt-side-nav__link' title='Submódulos'> <span class='dt-side-nav__text'>Submódulos</span> </a>
+                    </li><li class='dt-side-nav__item' id="SubModulos2023">
+                        <a href='/EmpTrazabilidad' class='dt-side-nav__link' title='Trazabilidad'> <span class='dt-side-nav__text'>Trazabilidad</span> </a>
                     </li>
                 </ul>
-            </div>
+            </li>
+           
+            <li class='dt-side-nav__item' name='Catálogos' id="Menu7">
+                <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Catálogos'> <i class="material-icons" style="font-size:2.4rem">add_shopping_cart</i><span class='dt-side-nav__text'>Catálogos</span></a>
+                <ul class='dt-side-nav__sub-menu'>
+                    <li class='dt-side-nav__item' id="SubMenu6">
+                        <a href='/Departamentos' class='dt-side-nav__link' title='Departamentos'> <span class='dt-side-nav__text'>Departamentos</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item' id="SubMenu4">
+                        <a href='/Areas' class='dt-side-nav__link' title='Areas'> <span class='dt-side-nav__text'>Áreas</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item' id="SubMenu7">
+                        <a href='/Sucursales' class='dt-side-nav__link' title='Sucursales'> <span class='dt-side-nav__text'>Sucursales</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item' id="SubMenu8">
+                        <a href='/Puestos' class='dt-side-nav__link' title='Puestos'> <span class='dt-side-nav__text'>Puestos</span> </a>
+                    </li>
+                    @*<li class='dt-side-nav__item' >
+                        <a href='/Insumos' class='dt-side-nav__link' title='Horarios'> <span class='dt-side-nav__text'>Horarios</span> </a>
+                    </li>*@
+                    <li class='dt-side-nav__item' id="SubMenu21">
+                        <a href='/Incidencias' class='dt-side-nav__link' title='Incidencias'> <span class='dt-side-nav__text'>Incidencias</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item' id="SubMenu1019">
+                        <a href='/Periodos' class='dt-side-nav__link' title='Periodos'> <span class='dt-side-nav__text'>Periodos</span> </a>
+                    </li>
+                    @*<li class='dt-side-nav__item'>
+                        <a href='/Insumos' class='dt-side-nav__link' title='Festivos'> <span class='dt-side-nav__text'>Festivos</span> </a>
+                    </li>*@
+                </ul>
+            </li>
+            <li class='dt-side-nav__item' name='Empleados' id="Menu5">
+                <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Presupuesto'> <i class='icon icon-data-display icon-fw icon-xl'></i><span class='dt-side-nav__text'>Empleados</span></a>
+                <ul class='dt-side-nav__sub-menu'>
+                    <li class='dt-side-nav__item' id="SubMenu10">
+                        <a href='/Empleados' class='dt-side-nav__link' title='Catálogo de Empleados'> <span class='dt-side-nav__text'>Catálogo de Empleados</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item' id="SubMenu11">
+                        <a href='/CatRegistroIncidencias' class='dt-side-nav__link' title='Registro de Incidencias'> <span class='dt-side-nav__text'>Registro de Incidencias</span> </a>
+                    </li>
+                    
+                    <li class='dt-side-nav__item' id="SubMenu12">
+                        <a href='/MovEmpleadosHorarios' class='dt-side-nav__link' title='Movimientos Horarios'> <span class='dt-side-nav__text'>Movimientos de Horarios</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item' id="SubMenu13">
+                        <a href='/HistorialVacaciones' class='dt-side-nav__link' title='Historial Vacaciones'> <span class='dt-side-nav__text'>Historial de Vacaciones</span> </a>
+                    </li>
+                    
+
+                </ul>
+            </li>
+            <li class='dt-side-nav__item' name='Reportes' id="Menu3">
+                <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Produccion'> <i class="material-icons" style="font-size:25px">build</i><span class='dt-side-nav__text'>Reportes</span></a>
+                <ul class='dt-side-nav__sub-menu'>
+                    @*<li class='dt-side-nav__item'>
+                        <a href='/PropuestaProduccion' class='dt-side-nav__link' title='Asistencia'> <span class='dt-side-nav__text'>Asistencias</span> </a>
+                    </li>*@
+                    <li class='dt-side-nav__item' id="SubMenu20">
+                        <a href='/Reportes' class='dt-side-nav__link' title='Incidencias'> <span class='dt-side-nav__text'>Reporte de permisos</span> </a>
+                    </li>
+                    @*<li class='dt-side-nav__item'>
+                        <a href='/Produccion' class='dt-side-nav__link' title='Cumpleaños'> <span class='dt-side-nav__text'>Cumpleaños</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item'>
+                        <a href='/Produccion' class='dt-side-nav__link' title='Incidencias'> <span class='dt-side-nav__text'>Incidencias</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item'>
+                        <a href='/Produccion' class='dt-side-nav__link' title='Ingresos'> <span class='dt-side-nav__text'>Ingresos</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item'>
+                        <a href='/Produccion' class='dt-side-nav__link' title='Antiguedad'> <span class='dt-side-nav__text'>Antiguedad</span> </a>
+                    </li>*@
+                </ul>
+            </li>
+            <li class='dt-side-nav__item' name='Capital Humano' id="Menu4">
+                <a href='javascript: void(0)' class='dt-side-nav__link dt-side-nav__arrow' title='Capital Humano'> <i class='icon icon-growth icon-fw icon-xl'></i><span class='dt-side-nav__text'>Capital Humano</span></a>
+                <ul class='dt-side-nav__sub-menu'>
+                    <li class='dt-side-nav__item'>
+                        <a href='/Plantilla' class='dt-side-nav__link' title='Administración de Plantillas'> <span class='dt-side-nav__text'>Plantillas</span> </a>
+                    </li>
+                    <li class='dt-side-nav__item'>
+                        <a href='/RequisicionPersonal' class='dt-side-nav__link' title='Requisiciones de personal'> <span class='dt-side-nav__text'>Requisición de personal</span> </a>
+                    </li>
+                    @*<li class='dt-side-nav__item'>
+                        <a href='/Requisiciones/Cotizaciones' class='dt-side-nav__link' title='Gafete'> <span class='dt-side-nav__text'>Gafete</span> </a>
+                    </li>*@
+                    <li class='dt-side-nav__item'>
+                        <a href='/Organigrama' class='dt-side-nav__link' title='Organigrama'> <span class='dt-side-nav__text'>Organigrama</span> </a>
+                    </li>
+                </ul>
+            </li>
+            
+                    
+                </ul>
             </li>
                 <div class="foot" style="position:absolute; bottom: 0; width:stretch">
                     <a class="btn btn-sm ml-auto " href="@Url.Action("LogOut","ApiLogin")" title="Cerrar sesión" style="font-size:1em;">
@@ -223,24 +260,31 @@
     </div>
 
     <script>
-const fecha = new Date();
-const anio = fecha.getFullYear();
+var fecha = new Date();
+var anio = fecha.getFullYear();
 document.getElementById('footeryear').innerText = "ND " + anio;
     </script>
   
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-  
+    <script src="~/lib/moment/moment.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Perfect Scrollbar jQuery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="~/lib/perfect-scrollbar/dist/perfect-scrollbar.min.js"></script>
     <!-- /perfect scrollbar jQuery -->
     <!-- masonry script -->
+    <script src="~/lib/masonry-layout/dist/masonry.pkgd.min.js"></script>
     <script src="~/lib/sweetalert2/dist/sweetalert2.js"></script>
     <!-- Date Table -->
+    <script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+    <script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script src="~/js/custom/data-table.js"></script>
     <!-- Date Table -->
     <script src="~/js/script.js"></script>
+    <script src="~/lib/toastr/toastr.min.js"></script>
     <script src="~/js/Permisos/Permisos.js"></script>
 
+    <script src="~/vendors/moment/moment.min.js"></script>
+    <script src="~/vendors/bootstrap-daterangepicker/daterangepicker.js"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
