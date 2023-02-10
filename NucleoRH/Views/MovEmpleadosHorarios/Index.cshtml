@@ -1,0 +1,298 @@
+﻿@model IEnumerable<NucleoRH.Models.MovEmpleadosHorarios>
+@{ ViewData["Title"] = "Movimientos Empleados Horarios"; }
+
+<style>
+
+    #table3 thead tr th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+    }
+
+    .table-responsive {
+        height: 200px;
+        overflow: scroll;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/i18n/defaults-es_ES.min.js"></script>
+
+<div class="dt-card dt-card__full-height">
+    <div class="dt-card__header" style="justify-self">
+        <h4 class="mb--15">Movimientos de Empleados - Horarios</h4>
+        <div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#Add" id="btnAgregarMovimiento">Agregar NUEVO Movimiento</button>
+            
+        </div>
+    </div>
+    <div class="card-body"  style="overflow:scroll">       
+        <table class="table" id="table3">
+            <thead>
+                <tr>
+                    <th scope="col">Número de Empleado</th>
+                    <th scope="col">Nombre del Empleado</th>
+                    <th scope="col">Fecha del movimiento</th>
+                    <th scope="col">Hora de Entrada</th>
+                    <th scope="col">Hora de Salida</th>
+                    <th scope="col">Hora de Entrada - Sábado</th>
+                    <th scope="col">Hora de Salida - Sábado</th>
+                    <th scope="col">Fecha de Inicio</th>
+                    <th scope="col">Fecha final</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ins in ViewBag.MovEmpleadosHorarios)
+               {
+                   <tr>
+                       <td>@ins.HoraEmp.EmpNumero</td>
+                       <td>@ins.HoraEmp.EmpNombreCompleto</td>
+                       <td>@ins.EmpHoraFechaRegistro.ToShortDateString()</td>
+                       <td>@ins.HoraHor.HoraEntrada</td>
+                       <td>@ins.HoraHor.HoraSalida</td>
+                       <td>@ins.HoraHor.HoraSabadoEntrada</td>
+                       <td>@ins.HoraHor.HoraSabadoSalida</td>
+                       <td>@ins.EmpHoraFechaDesde.ToShortDateString()</td>
+                        @if(@ins.EmpHoraFechaHasta == null)
+                        {
+                            <td>@ins.EmpHoraFechaHasta</td>
+                        }
+                        else{
+                        <td>@ins.EmpHoraFechaHasta.ToShortDateString()</td>
+                        }
+
+                        <td>
+                           <a href="" data-toggle="tooltip" data-placement="top" title="Detalles" onclick="OpenModalDetails(@ins.EmpHoraId)"><i class="material-icons text-info ">search</i></a>
+                       </td>
+                   </tr>
+               }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL DE NUEVO REGISTRO*@
+<div class="modal fade" id="Add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Movimiento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddMovimientoEmpleadoHorarios" asp-controller="MovEmpleadosHorarios" asp-action="Add" method="POST">
+                    <div class="form-group row">
+                        
+
+                        <table class="table table-borderless" id="table3">
+                             <tbody>
+                                 <tr>
+                                    <td> <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label mx-auto">Número de nómina</label><br />
+                            <input type="number" class="form-control col-sm-10 col-form-label " name="EmpHoraEmpId" id="EmpHoraEmpId"  required> <br />
+                        </div></td>
+                                    <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label mx-auto">Fecha del registro</label><br />
+                            <input type="date" class="form-control col-sm-10 col-form-label " name="EmpHoraFechaRegistro" id="EmpHoraFechaRegistro" readonly> <br />
+                        </div></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"  ><div class="col-sm-10 ">
+                            <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="SeleccionarPermanente" id="SeleccionarPermanente" > Movimiento temporal</label>
+                            
+                        </div></td>
+                        
+                                </tr>
+                                <tr>
+                                    <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Fecha de inicio:</label><br />
+                            <input type="date" class="form-control col-sm-10 col-form-label " name="EmpHoraFechaDesde" id="EmpHoraFechaDesde"  required> <br />
+                        </div></td>
+                        <td id="FHasta"><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hasta el:</label><br />
+                            <input type="date" class="form-control col-sm-10 col-form-label " name="EmpHoraFechaHasta" id="EmpHoraFechaHasta"> <br />
+                        </div></td>
+                                </tr>
+                                
+
+                                 <tr>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de entrada L-V:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraEntradaLV" id="HoraEntradaLV"  > <br />
+                        </div></td>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de salida L-V:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraSalidaLV" id="HoraSalidaLV"  > <br />
+                        </div></td>
+                                 </tr>
+                                 <tr>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de entrada Sábados:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraEntradaS" id="HoraEntradaS"  > <br />
+                        </div></td>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de salida Sábados:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraSalidaS" id="HoraSalidaS"  > <br />
+                        </div></td>
+                                 </tr>
+                                 <tr>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de salida para comer L-V:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraComidaLV" id="HoraComidaLV"  > <br />
+                                 </div></td>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de regreso de comer L-V:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraComidaSLV" id="HoraComidaSLV"  > <br />
+                                 </div></td>
+                                 </tr>
+                                 <tr>
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de salida para comer - Sábados:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraComidaS" id="HoraComidaS"  > <br />
+                                 </div></td>
+                                     
+                                     <td><div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hora de regreso de comer - Sábados:</label><br />
+                            <input type="time" class="form-control col-sm-10 col-form-label" name="HoraComidaSS" id="HoraComidaSS"  > <br />
+                                 </div></td>
+                                 </tr>
+                             </tbody>
+                         </table>
+                                                
+                        
+                        
+                        
+                    </div>
+                    <div class="form-group float-right">
+                        
+                        <button type="button" id="btnAddMovimientoEmpleadoHorarios" onclick="AddMovimientoEmpleadoHorarios()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Movimiento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditMovimientos" asp-controller="MovimientosHorarios" asp-action="EditMovimientos " method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group row">
+                       <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Nombre  del Empleado</label>
+                             <input type="text" class="form-control col-sm-10 col-form-label" name="EmpHoraEmpIdE" id="EmpHoraEmpIdE" readonly> <br />
+                        </div>
+                                
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Fecha del registro</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="EmpHoraFechaRegistroE" id="EmpHoraFechaRegistroE" readonly> <br />
+                        </div>
+                                
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Fecha de inicio:</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="EmpHoraFechaDesdeE" id="EmpHoraFechaDesdeE"  readonly> <br />
+                        </div>
+                               
+                        <div class="col-sm-10 mx-auto">
+                           <label class="col-sm-2 col-form-label">Horario</label>
+                            @*<input type="text" class="form-control col-sm-10 col-form-label" name="EmpHoraHorIdD" id="EmpHoraHorIdD" readonly> <br />*@
+                            <textarea class="form-control col-sm-10 col-form-label" name="EmpHoraHorIdE" id="EmpHoraHorIdE" maxlength="255" placeholder="Motivo" autocolplete="off" readonly></textarea>
+                        </div>
+                        
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hasta el:</label>
+                            <input type="date" class="form-control col-sm-10 col-form-label" name="EmpHoraFechaHastaE" id="EmpHoraFechaHastaE"> <br />
+                        </div>
+
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnEditMovimientos" onclick="EditMovimientos()" class="btn btn-success">Guardar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*DETALLES FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Details" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:35em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Movimiento</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="DetailsMovimientos" asp-controller="MovimientosHorarios" asp-action="DetailsMovimientos " method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdD" name="IdD" />
+                    <div class="form-group row">
+                          
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Nombre  del Empleado</label>
+                             <input type="text" class="form-control col-sm-12 col-form-label" name="EmpHoraEmpIdD" id="EmpHoraEmpIdD" readonly> <br />
+                        </div>
+                                
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Fecha del registro</label>
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpHoraFechaRegistroD" id="EmpHoraFechaRegistroD" readonly> <br />
+                        </div>
+                                
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Fecha de inicio:</label>
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpHoraFechaDesdeD" id="EmpHoraFechaDesdeD"  readonly> <br />
+                        </div>
+                                
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Hasta el:</label>
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpHoraFechaHastaD" id="EmpHoraFechaHastaD" readonly> <br />
+                        </div>
+                               
+                        <div class="col-sm-10 mx-auto">
+                           <label class="col-sm-2 col-form-label">Horario</label>
+                            @*<input type="text" class="form-control col-sm-10 col-form-label" name="EmpHoraHorIdD" id="EmpHoraHorIdD" readonly> <br />*@
+                            <textarea class="form-control col-sm-12 col-form-label" name="EmpHoraHorIdD" id="EmpHoraHorIdD" maxlength="255" placeholder="Motivo" autocolplete="off" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group float-md-right">
+                        
+                        <button data-dismiss="modal" class="btn btn-danger">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- ******* SECCIÓN DE JAVASCRIPT ******* -->
+
+<script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+<script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="~/js/custom/data-table.js"></script>
+<script src="~/js/MovEmpleadosHorarios/MovEmpleadosHorarios.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>

@@ -1,0 +1,137 @@
+﻿@model IEnumerable<NucleoRH.Models.CatAreas>
+@{ ViewData["Title"] = "Sucursales"; }
+
+<style>
+
+    #table3 thead tr th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+    }
+
+    .table-responsive {
+        height: 200px;
+        overflow: scroll;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/i18n/defaults-es_ES.min.js"></script>
+
+<div class="dt-card dt-card__full-height">
+    <div class="dt-card__header" style="justify-self">
+        <h4 class="mb--15">Áreas</h4>
+        <div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#Add" id="btnAgregarArea">Agregar Area</button>
+        </div>
+    </div>
+    <div class="card-body">       
+        <table class="table" id="table3">
+            <thead>
+                <tr>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Departamento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ins in ViewBag.Areas)
+               {
+                   <tr>
+                       <td>@ins.AreaDescripcion</td>
+                       <td>@ins.AreaDepa.DepaDescripcion</td>
+                        <td>
+                           <a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalEdit(@ins.AreaId)"><i class="material-icons text-warning EditarArea" id="btnEditarArea" >edit</i></a>
+                           <a href="" data-toggle="tooltip" data-placement="top" title="Eliminar" onclick="DeleteAreas(@ins.AreaId)"><i class="material-icons text-danger EliminarArea" id="btnEliminarArea" >delete</i></a>
+                       </td>
+                   </tr>
+               }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="Add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Área</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddAreas" asp-controller="Areas" asp-action="Add" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Descripcion</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="AreaDescripcion" id="AreaDescripcion" maxlength="50" placeholder="Descripción" autocomplete="off" required><br />
+                        </div>
+                        <label class="col-sm-2 col-form-label">Departamento</label>
+                        <div class="col-sm-10">
+                                <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.Depas" id="AreaDepaId" name="AreaDepaId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddAreas" onclick="AddAreas()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Área</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditAreas" asp-controller="Areas" asp-action="EditSucursales" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Descripcion</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="AreaDescripcionE" id="AreaDescripcionE" maxlength="50" placeholder="Descripción" autocomplete="off" required><br />
+                        </div>
+                        <label class="col-sm-2 col-form-label">Departamento</label>
+                        <div class="col-sm-10">
+                                <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.Depas" id="AreaDepaIdE" name="AreaDepaIdE" required >
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnEditAreas" onclick="EditAreas()" class="btn btn-success">Guardar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ******* SECCIÓN DE JAVASCRIPT ******* -->
+
+<script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+<script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="~/js/custom/data-table.js"></script>
+<script src="~/js/Areas/Areas.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>
