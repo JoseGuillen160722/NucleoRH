@@ -1,0 +1,1487 @@
+﻿@model IEnumerable<NucleoRH.Models.MovRequisicionPersonal>
+@{ ViewData["Title"] = "Requisicion de Personal"; }
+
+<style>
+
+    #table3 thead tr th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+    }
+
+    .table-responsive {
+        height: 200px;
+        overflow: scroll;
+    }
+</style>
+<link rel="stylesheet" href="~/css/ModalCancelacion.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/i18n/defaults-es_ES.min.js"></script>
+
+
+<script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+
+<div class="dt-card dt-card__full-height">
+    <div class="dt-card__header" style="justify-self">
+        <h4 class="mb--15">Requisiciones de personal</h4>
+        <div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#Add" id="btnAgregarRequisicion">Agregar requisición</button>
+            <button class="btn btn-success" data-toggle="modal" data-target="#AddPuesto" id="btnAgregarPuesto">Agregar NUEVO puesto</button>
+        </div>
+    </div>
+    <div class="card-body" style="overflow:scroll">       
+         <div class="t-container">
+            <input type="hidden"/>
+            <input type="hidden" id="Id" name="Id"/>   
+            <ul class="t-tabs row justify-content-center">  
+            <li class="t-tab">Requisiciones propias</li>  
+            <li class="t-tab">Capital Humano</li> 
+            <li class="t-tab">Dirección</li> 
+            </ul>
+            <ul class="t-contents">
+            <li class="t-content">
+               <table class="table" id="table3">
+                   <thead>
+                       <tr>
+                          <th scope="col" style="display:none"> Id</th>
+                          <th scope="col">Puesto</th>
+                          <th scope="col">Fecha de elaboración</th>
+                          <th scope="col">Número de vacantes</th>
+                          <th scope="col">Turno</th>
+                          <th scope="col">Sucursal</th>
+                          <th scope="col">Departamento</th>
+                          <th scope="col">Estatus</th>
+                          <th>Acciones</th>
+                       </tr>
+                   </thead>
+                   <tbody>
+                       @foreach (var ins in ViewBag.RequisicionPersonal)
+                       {
+                       <tr>
+                      
+                          <td style="display:none">@ins.Id</td>
+                          <td>@ins.NombreDelPuesto</td>
+                          <td>@ins.FechaDeElaboracion.ToShortDateString()</td>
+                          <td>@ins.NumeroDeVacantes</td>
+                          <td>@ins.Turno</td>
+                          <td>@ins.Sucursal</td>
+                          <td>@ins.Departamento</td>
+                          <td>@ins.EstatusId</td>
+                          <td>
+                            <a href="" data-toggle="tooltip" data-placement="top" title="Detalles" onclick="OpenModalDetails(@ins.Id)"><i class="material-icons text-info ">search</i></a>
+                            <a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalEditDetails(@ins.Id)"><i class="material-icons text-warning EditarDetallesRequisicion" >edit</i></a>
+                            <a href="" data-toggle="tooltip" data-placement="top" title="Cancelar requisición" onclick="OpenModalCancelacion(@ins.Id)"><i class="material-icons text-danger CancelarRequisicion" >cancel</i></a>
+                          </td>
+                            </tr>
+                       }
+                   </tbody>
+               </table>
+            </li>
+            <li class="t-content">
+                <table class="table" id="table4">
+                    <thead>
+                        <tr>
+                           <th scope="col" style="display:none"> Id</th>
+                           <th scope="col">Puesto</th>
+                           <th scope="col">Fecha de elaboración</th>
+                           <th scope="col">Número de vacantes</th>
+                           <th scope="col">Turno</th>
+                           <th scope="col">Sucursal</th>
+                           <th scope="col">Departamento</th>
+                           <th scope="col">Estatus</th>
+                           <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ins in ViewBag.RequisicionPersonalCH)
+                        {
+                           <tr>
+                               <td style="display:none">@ins.Id</td>
+                               <td>@ins.NombreDelPuesto</td>
+                               <td>@ins.FechaDeElaboracion.ToShortDateString()</td>
+                               <td>@ins.NumeroDeVacantes</td>
+                               <td>@ins.Turno</td>
+                               <td>@ins.Sucursal</td>
+                               <td>@ins.Departamento</td>
+                               <td>@ins.EstatusId</td>
+                               <td>
+                               @if(ins.FlujoId == 1064 && ins.EstatusId != "CANCELADO"){
+                                  <a href="/GenerarPdf/@ins.Id" target="_blank" data-toggle="tooltip" data-placement="top" title="Generar PDF de la requisicion"><i class="material-icons text-black-50 GenerarPDF"  >task</i></a>
+                               }
+                               @if(ins.FlujoId != 1064)
+                               {
+                                  <a href="" data-toggle="tooltip" data-placement="top" title="Aceptar o Rechazar" onclick="OpenModalRequisicion(@ins.Id)"><i class="material-icons text-warning AceptarRequisicion" >check</i></a>
+                               }
+                                  <a href="" data-toggle="tooltip" data-placement="top" title="Detalles" onclick="OpenModalDetails(@ins.Id)"><i class="material-icons text-info ">search</i></a>
+                                  <a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalEditDetails(@ins.Id)"><i class="material-icons text-warning EditarDetallesRequisicion" >edit</i></a>
+                                  <a href="" data-toggle="tooltip" data-placement="top" title="Cancelar requisición" onclick="OpenModalCancelacion(@ins.Id)"><i class="material-icons text-danger CancelarRequisicion" >cancel</i></a>
+                               </td>
+                           </tr>
+                        }
+                    </tbody>
+                </table>             
+            </li>
+            <li class="t-content">
+                <table class="table" id="table5">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="display:none"> Id</th>
+                            <th scope="col">Puesto</th>
+                            <th scope="col">Fecha de elaboración</th>
+                            <th scope="col">Número de vacantes</th>
+                            <th scope="col">Turno</th>
+                            <th scope="col">Sucursal</th>
+                            <th scope="col">Departamento</th>
+                            <th scope="col">Estatus</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ins in ViewBag.RequisicionPersonalDireccion)
+                        {
+                            <tr>
+                                <td style="display:none">@ins.Id</td>
+                                <td>@ins.NombreDelPuesto</td>
+                                <td>@ins.FechaDeElaboracion.ToShortDateString()</td>
+                                <td>@ins.NumeroDeVacantes</td>
+                                <td>@ins.Turno</td>
+                                <td>@ins.Sucursal</td>
+                                <td>@ins.Departamento</td>
+                                <td>@ins.EstatusId</td>
+                                <td>
+                                    <a href="" data-toggle="tooltip" data-placement="top" title="Detalles" onclick="OpenModalDetails(@ins.Id)"><i class="material-icons text-info ">search</i></a>
+                                    <a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalRequisicion(@ins.Id)"><i class="material-icons text-warning AceptarRequisicion" >check</i></a>
+                                  @*<a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalEditDetails(@ins.Id)"><i class="material-icons text-warning EditarDetallesRequisicion" >edit</i></a>*@
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>             
+            </li>
+            </ul>
+         </div>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="AddPuesto" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar nuevo puesto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AgregarPuestos" asp-controller="Puestos" asp-action="Add" method="POST">
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Descripcion</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="PuestoDescripcionRP" id="PuestoDescripcionRP" maxlength="50" placeholder="Descripcion" autocomplete="off" required><br />
+                        </div>
+                        <label class="col-sm-2 col-form-label">Departamento</label>
+                        <div class="col-sm-10">
+                            <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.Departamentos" id="DepaIdRP" name="DepaIdRP" onchange="SeleccionarDepartamento();" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select> <br />
+                        </div>
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Área</label>
+                            <select class="form-control col-sm-10 col-form-label"  id="PuestoAreaIdRP" name="PuestoAreaIdRP" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select> <br />
+                        </div>
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Puesto Superior</label>
+                            <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.Puestos" id="PuestoJerarquiaSuperiorPuestoIdRP" name="PuestoJerarquiaSuperiorIdRP" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddPuestos" onclick="AgregarPuestos()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="Add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:65em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar nueva requisición</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AgregarRequisicion" asp-controller="RequisicionPersonal" asp-action="Add" method="POST">
+                    <div class="t-container">
+                        <input type="hidden"/>
+                        <input type="hidden" id="Id" name="Id"/>   
+                    <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos generales del puesto solicitado</li>  
+                    <li class="t-tab">Perfil de la vacante</li> 
+                    </ul>
+                    <ul class="t-contents">
+                    <li class="t-content">
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                     <div >
+                                    <label class="col-form-label">Departamento</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Departamentos" id="MRPDepaId" name="MRPDepaId" onchange="SeleccionarDepartamento();"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                     <div >
+                                    <label class="col-form-label">Área</label>
+                                    <select class="form-control col-form-label"  id="MRPAreaId" name="MRPAreaId" onchange="SeleccionarArea();"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Puesto</label>
+                                    <select class="form-control col-form-label"  id="MRPPuestoId" name="MRPPuestoId"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Número de vacantes</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPNumeroVacantes" id="MRPNumeroVacantes"  required><br />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de elaboración</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaElaboracion" id="MRPFechaElaboracion" readonly><br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tipo de Vacante</label>
+                                    <select class="form-control col-form-label"  id="MRPTipoVacante" name="MRPTipoVacante" required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Eventual</option>
+                                    <option  value="2">Permanente</option>
+                                    <option  value="3">Cubre-Incidencias</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Turno</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Turnos" id="MRPTurnoId" name="MRPTurnoId"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div class="col-sm-10 "><br /><br />
+                                    <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="MRPRolarTurno" id="MRPRolarTurno" > ¿Necesita rolar turnos?</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Sucursal</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Sucursales" id="MRPSucursalId" name="MRPSucursalId"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tiempo de alimento (en horas. Por ejemplo: 1.5 horas)</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPTiempoAlimentos" id="MRPTiempoAlimentos"  required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Motivo de la vacante</label>
+                                    <select class="form-control col-form-label"  id="MRPMotivoVacante" name="MRPMotivoVacante" onchange="EmpleadoByAreaAndPuesto()" required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Nueva creación</option>
+                                    <option  value="2">Vacaciones</option>
+                                    <option  value="3">Sustitución de personal</option>
+                                    <option  value="4">Cubrir incapacidad</option>
+                                    <option  value="5">Promoción de personal</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div id="MotivoDescripcion" style="display:none">
+                                    <label class="col-form-label">Descripción del tipo de vacante</label>
+                                    <textarea class="form-control col-form-label" name="MRPMotivoDescripcion" id="MRPMotivoDescripcion"></textarea>
+                                    </div>
+                                    <div id="EmpleadoMRP" style="display:none">
+                                    <label class="col-form-label">Empleado</label>
+                                    <select class="form-control col-form-label"  id="MRPEmplId" name="MRPEmpId">
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li class="t-content">
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Sexo</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Sexos" id="MRPSexoId" name="MRPSexoId"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Escolaridad</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Escolaridades" id="MRPEscolaridadId" name="MRPEscolaridadId"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad mínima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMinima" id="MRPEdadMinima" required>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad máxima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMaxima" id="MRPEdadMaxima" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div class="col-sm-10 ">
+                                    <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="MRPTituloIndispensable" id="MRPTituloIndispensable" > Título indispensable</label>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div class="col-sm-10 ">
+                                    <label class="col-sm-2 col-form-label mx-auto" nowrap><input type="checkbox" class="mx-auto" name="MRPCedulaIndispensable" id="MRPIndispensable" > Cédula profesional indispensable</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td colspan="2" class="col-12">
+                                    <div class="col-sm-10 ">
+                                    <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="MRPExperienciaIndispensable" id="MRPExperienciaIndispensable" > ¿Necesita experiencia en el puesto?</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Funciones del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPFuncionesPuesto" id="MRPFuncionesPuesto"></textarea>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Conocimientos del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPConocimientosPuesto" id="MRPConocimientosPuesto"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    </ul>
+                        </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddPuestos" onclick="AgregarRequisicion()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:65em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Aceptar o rechazar requisición</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditRequisicion" asp-controller="Requisicion" asp-action="EditRequisicion" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="t-container">
+                    <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos generales del puesto solicitado</li>  
+                    <li class="t-tab">Perfil de la vacante</li> 
+                    <li class="t-tab" id="Sueldos">Sueldos</li> 
+                    </ul>
+                    <ul class="t-contents">
+                    <li class="t-content"> @* DATOS GENERALES DEL PUESTO *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Puesto</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPPuestoIdE" id="MRPPuestoIdE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Número de vacantes</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPNumeroVacantesE" id="MRPNumeroVacantesE"  readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de elaboración</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPFechaElaboracionE" id="MRPFechaElaboracionE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tipo de vacante</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTipoVacanteE" id="MRPTipoVacanteE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Turno</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTurnoIdE" id="MRPTurnoIdE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Necesita rolar turnos?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPRolarTurnoE" id="MRPRolarTurnoE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sucursal</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSucursalIdE" id="MRPSucursalIdE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tiempo de alimento</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPTiempoAlimentosE" id="MRPTiempoAlimentosE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Motivo de la vacante</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPMotivoVacanteE" id="MRPMotivoVacanteE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div id="DescripcionAR" style="display:none">
+                                    <label class="col-form-label">Descripción del tipo de vacante</label>
+                                    <textarea class="form-control col-form-label" name="MRPMotivoDescripcionE" id="MRPMotivoDescripcionE" readonly></textarea>
+                                    </div>
+                                    <div id="EmpleadoAR" style="display:none">
+                                    <label class="col-form-label">Empleado</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPEmpIdE" id="MRPEmpIdE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                
+                                <td class="col-6" colspan="2">
+                                    <div>
+                                    <label class="col-form-label">Observaciones</label>
+                                    <textarea class="form-control col-form-label" name="BitRPObservaciones" id="BitRPObservaciones"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li class="t-content"> @* PERFIL DE LA VACANTE *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sexo</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSexoIdE" id="MRPSexoIdE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Escolaridad</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPEscolaridadIdE" id="MRPEscolaridadIdE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad mínima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMinimaE" id="MRPEdadMinimaE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad máxima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMaximaE" id="MRPEdadMaximaE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Título indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTituloIndispensableE" id="MRPTituloIndispensableE" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Cédula profesional indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCedulaIndispensableE" id="MRPCedulaIndispensableE" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Experiencia indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPExperienciaIndispensableE" id="MRPExperienciaIndispensableE" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Funciones del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPFuncionesPuestoE" id="MRPFuncionesPuestoE" readonly></textarea>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Conocimientos del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPConocimientosPuestoE" id="MRPConocimientosPuestoE" readonly></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    <li class="t-content"> @* SUELDOS *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual inicial</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualInicial" id="MRPSueldoMensualInicial">
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual planta</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSueldoMensualPlanta" id="MRPSueldoMensualPlanta">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual + costo</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualMasCosto" id="MRPSueldoMensualMasCosto">
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Bono Variable</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPBonoVariable" id="MRPBonoVariable">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Esquema de contratación</label>
+                                    <select class="form-control col-form-label"  id="MRPEsquemaContratacion" name="MRPEsquemaContratacion"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Nómina</option>
+                                    <option  value="2">Honorarios</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Candidato a contratar</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCandidato" id="MRPCandidato">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de ingreso</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaIngreso" id="MRPFechaIngreso">
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                    <label class="col-form-label">Folio</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPFolio" id="MRPFolio">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label" id="LabelFechaRecepcion">Fecha de recepción</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPFechaRecepcion" id="MRPFechaRecepcion">
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    </ul>
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnMostrarSueldos" onclick="HabilitarCamposRequisicion()" class="btn btn-success">Aceptar</button>
+                        <button type="button" id="btnAceptarRequisicion" onclick="AceptarRequisicion()" class="btn btn-success">Enviar</button>
+                        <button type="button" id="btnRechazarRequisicion" onclick="RechazarRequisicion()" class="btn btn-danger">Rechazar requisición</button>
+                        <button type="button" id="btnRegresarRequisicion" onclick="RegresarRequisicion()" class="btn btn-danger">Regresar a revisión</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*DETALLES FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Details" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:65em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la requisición de personal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="DetailsRequisicion" asp-controller="Requisicion" asp-action="DetailsRequisicion" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdD" name="IdD" />
+                    <div class="t-container">
+                    <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos generales del puesto solicitado</li>  
+                    <li class="t-tab">Perfil de la vacante</li> 
+                    <li class="t-tab" id="Sueldos">Sueldos</li> 
+                    </ul>
+                    <ul class="t-contents">
+                    <li class="t-content"> @* DATOS GENERALES DEL PUESTO *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    
+                                    <div>
+                                    <label class="col-form-label">Puesto</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPPuestoIdD" id="MRPPuestoIdD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Número de vacantes</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPNumeroVacantesD" id="MRPNumeroVacantesD"  readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de elaboración</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPFechaElaboracionD" id="MRPFechaElaboracionD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tipo de vacante</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTipoVacanteD" id="MRPTipoVacanteD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Turno</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTurnoIdD" id="MRPTurnoIdD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Necesita rolar turnos?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPRolarTurnoD" id="MRPRolarTurnoD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sucursal</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSucursalIdD" id="MRPSucursalIdD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tiempo de alimento</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPTiempoAlimentosD" id="MRPTiempoAlimentosD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sucursal</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPMotivoVacanteD" id="MRPMotivoVacanteD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Descripción del tipo de vacante</label>
+                                    <textarea class="form-control col-form-label" name="MRPMotivoDescripcionD" id="MRPMotivoDescripcionD" readonly></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li class="t-content"> @* PERFIL DE LA VACANTE *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sexo</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSexoIdD" id="MRPSexoIdD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Escolaridad</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPEscolaridadIdD" id="MRPEscolaridadIdD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad mínima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMinimaD" id="MRPEdadMinimaD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad máxima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMaximaD" id="MRPEdadMaximaD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Título indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTituloIndispensableD" id="MRPTituloIndispensableD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Cédula profesional indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCedulaIndispensableD" id="MRPCedulaIndispensableD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Experiencia indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPExperienciaIndispensableD" id="MRPExperienciaIndispensableD" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Funciones del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPFuncionesPuestoD" id="MRPFuncionesPuestoD" readonly></textarea>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Conocimientos del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPConocimientosPuestoD" id="MRPConocimientosPuestoD" readonly></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    <li class="t-content"> @* SUELDOS *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual inicial</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualInicialD" id="MRPSueldoMensualInicialD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual planta</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSueldoMensualPlantaD" id="MRPSueldoMensualPlantaD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual + costo</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualMasCostoD" id="MRPSueldoMensualMasCostoD" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Bono Variable</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPBonoVariableD" id="MRPBonoVariableD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Esquema de contratación</label>
+                                    <select class="form-control col-form-label"  id="MRPEsquemaContratacionD" name="MRPEsquemaContratacionD" readonly>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Nómina</option>
+                                    <option  value="2">Honorarios</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Candidato a contratar</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCandidatoD" id="MRPCandidatoD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de ingreso</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaIngresoD" id="MRPFechaIngresoD" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                    <label class="col-form-label">Folio</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPFolioD" id="MRPFolioD" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de recepción</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPFechaRecepcionD" id="MRPFechaRecepcionD" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="EditDetails" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:65em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Modificar detalles de la requisición</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditDetallesRequisicion" asp-controller="Requisicion" asp-action="EditDetallesRequisicion" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdED" name="IdED" />
+                    <div class="t-container">
+                    <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos generales del puesto solicitado</li>  
+                    <li class="t-tab">Perfil de la vacante</li> 
+                    <li class="t-tab" id="SueldosED">Sueldos</li> 
+                    </ul>
+                    <ul class="t-contents">
+                    <li class="t-content"> @* DATOS GENERALES DEL PUESTO *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Puesto</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Puestos" id="MRPPuestoIdED" name="MRPPuestoIdED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Número de vacantes</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPNumeroVacantesED" id="MRPNumeroVacantesED"  required><br />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de elaboración</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaElaboracionED" id="MRPFechaElaboracionED" readonly><br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tipo de Vacante</label>
+                                    <select class="form-control col-form-label"  id="MRPTipoVacanteED" name="MRPTipoVacanteED" required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Eventual</option>
+                                    <option  value="2">Permanente</option>
+                                    <option  value="3">Cubre-Incidencias</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Turno</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Turnos" id="MRPTurnoIdED" name="MRPTurnoIdED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> <br />
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div class="col-sm-10 "><br /><br />
+                                    <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="MRPRolarTurnoED" id="MRPRolarTurnoED" > ¿Necesita rolar turnos?</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Sucursal</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Sucursales" id="MRPSucursalIdED" name="MRPSucursalIdED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tiempo de alimento</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPTiempoAlimentosED" id="MRPTiempoAlimentosED"  required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Motivo de la vacante</label>
+                                    <select class="form-control col-form-label"  id="MRPMotivoVacanteED" name="MRPMotivoVacanteED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Nueva creación</option>
+                                    <option  value="2">Vacaciones</option>
+                                    <option  value="3">Sustitución de personal</option>
+                                    <option  value="4">Cubrir incapacidad</option>
+                                    <option  value="5">Promoción de personal</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Descripción del tipo de vacante</label>
+                                    <textarea class="form-control col-form-label" name="MRPMotivoDescripcionED" id="MRPMotivoDescripcionED"></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li class="t-content"> @* PERFIL DE LA VACANTE *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Sexo</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Sexos" id="MRPSexoIdED" name="MRPSexoIdED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div >
+                                    <label class="col-form-label">Escolaridad</label>
+                                    <select class="form-control col-form-label" asp-items="ViewBag.Escolaridades" id="MRPEscolaridadIdED" name="MRPEscolaridadIdED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad mínima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMinimaED" id="MRPEdadMinimaED" required>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad máxima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMaximaED" id="MRPEdadMaximaED" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div class="col-sm-10 ">
+                                    <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="MRPTituloIndispensableED" id="MRPTituloIndispensableED" > Título indispensable</label>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div class="col-sm-10 ">
+                                    <label class="col-sm-2 col-form-label mx-auto" nowrap><input type="checkbox" class="mx-auto" name="MRPCedulaIndispensableED" id="MRPCedulaIndispensableED" > Cédula profesional indispensable</label>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td colspan="2" class="col-12">
+                                    <div class="col-sm-10 ">
+                                    <label class="col-sm-2 col-form-label mx-auto"><input type="checkbox" class="mx-auto" name="MRPExperienciaIndispensableED" id="MRPExperienciaIndispensableED" > ¿Necesita experiencia en el puesto?</label>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Funciones del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPFuncionesPuestoED" id="MRPFuncionesPuestoED" required></textarea>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Conocimientos del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPConocimientosPuestoED" id="MRPConocimientosPuestoED" required></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>                             
+                    </li>
+                    <li class="t-content"> @* SUELDOS *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual inicial</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualInicialED" id="MRPSueldoMensualInicialED" required>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual planta</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSueldoMensualPlantaED" id="MRPSueldoMensualPlantaED" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual + costo</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualMasCostoED" id="MRPSueldoMensualMasCostoED" required>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Bono Variable</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPBonoVariableED" id="MRPBonoVariableED" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Esquema de contratación</label>
+                                    <select class="form-control col-form-label"  id="MRPEsquemaContratacionED" name="MRPEsquemaContratacionED"  required>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Nómina</option>
+                                    <option  value="2">Honorarios</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Candidato a contratar</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCandidatoED" id="MRPCandidatoED" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de ingreso</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaIngresoED" id="MRPFechaIngresoED" required>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                    <label class="col-form-label">Folio</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPFolioED" id="MRPFolioED" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de recepción</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaRecepcionED" id="MRPFechaRecepcionED" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    </ul>
+                        </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnEditarDetallesRequisicion" onclick="ModificarDetalleRequisicion()" class="btn btn-success">Guardar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*DETALLES FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="DetallesCancelacion" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:65em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la requisición de personal que se va a cancelar </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="DetailsCancelarRequisicion" asp-controller="Requisicion" asp-action="DetailsRequisicion" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdC" name="IdC" />
+                    <div class="t-container">
+                    <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos generales del puesto solicitado</li>  
+                    <li class="t-tab">Perfil de la vacante</li> 
+                    <li class="t-tab" id="Sueldos">Sueldos</li> 
+                    </ul>
+                    <ul class="t-contents">
+                    <li class="t-content"> @* DATOS GENERALES DEL PUESTO *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Puesto</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPPuestoIdC" id="MRPPuestoIdC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Número de vacantes</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPNumeroVacantesC" id="MRPNumeroVacantesC"  readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de elaboración</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPFechaElaboracionC" id="MRPFechaElaboracionC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tipo de vacante</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTipoVacanteC" id="MRPTipoVacanteC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Turno</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTurnoIdC" id="MRPTurnoIdC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Necesita rolar turnos?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPRolarTurnoC" id="MRPRolarTurnoC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sucursal</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSucursalIdC" id="MRPSucursalIdC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Tiempo de alimento</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPTiempoAlimentosC" id="MRPTiempoAlimentosC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sucursal</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPMotivoVacanteC" id="MRPMotivoVacanteC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Descripción del tipo de vacante</label>
+                                    <textarea class="form-control col-form-label" name="MRPMotivoDescripcionC" id="MRPMotivoDescripcionC" readonly></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    <li class="t-content"> @* PERFIL DE LA VACANTE *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sexo</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSexoIdC" id="MRPSexoIdC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Escolaridad</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPEscolaridadIdC" id="MRPEscolaridadIdC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad mínima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMinimaC" id="MRPEdadMinimaC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Edad máxima</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPEdadMaximaC" id="MRPEdadMaximaC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Título indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPTituloIndispensableC" id="MRPTituloIndispensableC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Cédula profesional indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCedulaIndispensableC" id="MRPCedulaIndispensableC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">¿Experiencia indispensable?</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPExperienciaIndispensableC" id="MRPExperienciaIndispensableC" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Funciones del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPFuncionesPuestoC" id="MRPFuncionesPuestoC" readonly></textarea>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Conocimientos del puesto</label>
+                                    <textarea class="form-control col-form-label" name="MRPConocimientosPuestoC" id="MRPConocimientosPuestoC" readonly></textarea>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    <li class="t-content"> @* SUELDOS *@
+                        <div class="Cancelacion" id="Cancelacion"><span class="SpanCancelacion">CANCELADO</span></div>
+                        <table class="table table-borderless" id="table3">
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual inicial</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualInicialC" id="MRPSueldoMensualInicialC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual planta</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPSueldoMensualPlantaC" id="MRPSueldoMensualPlantaC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Sueldo mensual + costo</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPSueldoMensualMasCostoC" id="MRPSueldoMensualMasCostoC" readonly>
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Bono Variable</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPBonoVariableC" id="MRPBonoVariableC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Esquema de contratación</label>
+                                    <select class="form-control col-form-label"  id="MRPEsquemaContratacionC" name="MRPEsquemaContratacionC" readonly>
+                                    <option selected disabled value="">Seleccione una opción</option>
+                                    <option  value="1">Nómina</option>
+                                    <option  value="2">Honorarios</option>
+                                    </select> 
+                                    </div>
+                                </td>
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Candidato a contratar</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPCandidatoC" id="MRPCandidatoC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de ingreso</label>
+                                    <input type="date" class="form-control col-form-label" name="MRPFechaIngresoC" id="MRPFechaIngresoC" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                    <label class="col-form-label">Folio</label>
+                                    <input type="number" class="form-control col-form-label" name="MRPFolioC" id="MRPFolioC" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="col">
+                                <td class="col-6">
+                                    <div>
+                                    <label class="col-form-label">Fecha de recepción</label>
+                                    <input type="text" class="form-control col-form-label" name="MRPFechaRecepcionC" id="MRPFechaRecepcionC" readonly>
+                                    </div>
+                                </td>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>                    
+                    </li>
+                    </ul>
+                    </div>
+                    <div>
+                       <label class="col-form-label">Motivo de la cancelación</label>
+                       <textarea class="form-control col-form-label" name="MotivoCancelacion" id="MotivoCancelacion"></textarea><br /> 
+                    </div>
+                    <div class="form-group float-right">
+                    <button type="button" id="btnCancelarRequisicion" onclick="CancelarRequisicion()" class="btn btn-danger">Cancelar requisición</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- ******* SECCIÓN DE JAVASCRIPT ******* -->
+
+<script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+<script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="~/js/custom/data-table.js"></script>
+<script src="~/js/MovRequisicionPersonal/RequisicionPersonal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>

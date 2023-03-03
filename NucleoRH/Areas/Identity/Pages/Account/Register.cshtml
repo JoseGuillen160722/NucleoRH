@@ -1,0 +1,100 @@
+﻿@page
+@model RegisterModel
+@*@{
+    ViewData["Title"] = "Register";
+}*@
+
+@{
+    Layout = null;
+}
+
+@* <!-- Meta tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="ND SYSTEM">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- /meta tags -->
+    <link rel="icon" href="/img/logond.svg" type="image/icon type">
+
+    <link rel="stylesheet" href="~/lib/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="~/vend
+    <title>Nucleo de Diagnóstico RH</title>
+ors/gaxon-icon/style.css">
+    <link rel="stylesheet" href="~/lib/perfect-scrollbar/css/perfect-scrollbar.css">
+    <link rel="stylesheet" href="~/css/lite-style-1.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="~/lib/toastr/toastr.min.css">
+    <link href="~/vendors/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
+
+
+<h1>@ViewData["Title"]</h1>
+
+
+<div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col col-xl-10">
+        <div class="card" style="border-radius: 3rem;">
+          <div class="row g-0">
+            <div class="col-md-6 col-lg-5 d-none d-md-block Imagen" style="background-color: #B6E3F2; border-start-start-radius: 3rem; border-bottom-left-radius: 3rem;">
+                <br />
+                <br />
+                <br />
+                
+              <img src="https://files.nucleodediagnostico.mx/img/NucleoRH.png"
+                alt="login form" class="img-fluid" style="border-radius: 1rem 1rem 1rem 1rem; align-items: center;"/>
+            </div>
+            <div class="col-md-6 col-lg-7 d-flex align-items-center">
+              <div class="card-body p-4 p-lg-5 text-black">
+
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <h4>Crear nueva cuenta de usuario.</h4>
+            <hr />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Input.UserName"></label>
+                <input asp-for="Input.UserName" class="form-control" required/>
+                <span asp-validation-for="Input.UserName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Email"></label>
+                <input asp-for="Input.Email" class="form-control" required/>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.Password"></label>
+                <input asp-for="Input.Password" class="form-control" required title="Una contraseña que incluya una mayúscula, una minúscula y un caracter especial(*-.+,; etc.)"/>
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.ConfirmPassword"></label>
+                <input asp-for="Input.ConfirmPassword" class="form-control" required title="Una contraseña que incluya una mayúscula, una minúscula y un caracter especial(*-.+,; etc.)"/>
+                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </form>
+  
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}*@

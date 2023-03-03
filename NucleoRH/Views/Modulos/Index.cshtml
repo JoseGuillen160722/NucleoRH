@@ -1,0 +1,195 @@
+﻿@model IEnumerable<NucleoRH.Models.CatModulos>
+@{ ViewData["Title"] = "Modulos"; }
+
+<style>
+
+    #table3 thead tr th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+    }
+
+    .table-responsive {
+        height: 200px;
+        overflow: scroll;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/i18n/defaults-es_ES.min.js"></script>
+
+<div class="dt-card dt-card__full-height">
+    <div class="dt-card__header" style="justify-self">
+        <h4 class="mb--15">Módulos</h4>
+        <div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#Add" id="btnAgregarModulo">Agregar Módulo</button>
+        </div>
+    </div>
+    <div class="card-body">       
+        <table class="table" id="table3">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre del módulo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ins in ViewBag.Modulos)
+               {
+                   <tr>
+                       <td>@ins.ModuloNombre</td>
+                       <td>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalEdit(@ins.ModuloId)"><i class="material-icons text-warning EditarModulo">edit</i></a>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Eliminar" onclick="DeleteModulo(@ins.ModuloId)"><i class="material-icons text-danger EliminarModulo">delete</i></a>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Añadir submódulo"  onclick="OpenModalAddSubModulo(@ins.ModuloId)"><i class="material-icons text-success AgregarSubModulo">add</i></a>
+                       </td>
+                   </tr>
+               }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="Add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Módulo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddModulo" asp-controller="Modulos" asp-action="Add" method="POST">
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Nombre del módulo</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="ModuloNombre" id="ModuloNombre" maxlength="50" placeholder="Descripcion" autocomplete="off" required>
+                        </div>
+                        </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddModulo" onclick="AddModulo()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Módulo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditModulo" asp-controller="Modulos" asp-action="EditModulo" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label">Nombre del módulo</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="ModuloNombreE" id="ModuloNombreE" placeholder="Nombre del módulo" autocomplete="off" required>
+                        </div>
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnEditModulo" onclick="EditModulo()" class="btn btn-success">Guardar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="AddSubModulo" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Submódulo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditSubModulo" asp-controller="Modulos" asp-action="EditSubModulo" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="Id" name="Id" />
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Nombre del módulo</label><br />
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="ModuloNombreS" id="ModuloNombreS"  readonly>
+                        </div>
+                        
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Nombre del submódulo</label><br />
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="SubMName" id="SubMName" maxlength="50" placeholder="Nombre del submódulo" required>
+                        </div>
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnEditModulo" onclick="AddModuloSubModulo()" class="btn btn-success">Guardar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*Agregar Submódulo YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="AddSub" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Sub Módulo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddModuloSubModulo" asp-controller="SubModulos" asp-action="Add" method="POST">
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Módulo</label><br />
+                                <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.Modulo" id="SubMModuloId" name="SubMModuloId" required> 
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select> <br />
+                        </div>
+                        
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Nombre del submódulo</label><br />
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="SubMName" id="SubMName" maxlength="50" placeholder="Nombre del submódulo" required>
+                        </div>
+                        </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddSubModulo" onclick="AddSubModulo()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ******* SECCIÓN DE JAVASCRIPT ******* -->
+
+<script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+<script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="~/js/custom/data-table.js"></script>
+<script src="~/js/Modulos/Modulos.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>
+

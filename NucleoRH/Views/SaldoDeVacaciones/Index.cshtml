@@ -1,0 +1,271 @@
+﻿@model IEnumerable<NucleoRH.Models.CatSaldoDeVacaciones>
+
+@{ ViewData["Title"] = "Saldo de Vacaciones"; }
+
+<style>
+
+    #table3 thead tr th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+    }
+
+    .table-responsive {
+        height: 200px;
+        overflow: scroll;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/i18n/defaults-es_ES.min.js"></script>
+
+<div class="dt-card dt-card__full-height">
+    <div class="dt-card__header" style="justify-self">
+        <h4 class="mb--15">Saldos de Vacaciones</h4>
+        <div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#Add" id="btnAgregarSaldo">Agregar Registro</button>
+        </div>
+    </div>
+    <div class="card-body" style="overflow:scroll">       
+        <table class="table" id="table3">
+            <thead>
+                <tr>
+                    
+                    <th scope="col">Folio</th>
+                    <th scope="col">Número de nómina</th>
+                    <th scope="col">Nombre del Empleado</th>
+                    <th scope="col">Fecha de ingreso del empleado</th>
+                    <th scope="col">Fecha del registro</th>
+                    <th scope="col">Antiguedad</th>
+                    <th scope="col">Ejercicio (Año)</th>
+                    <th scope="col">Días disfrutados</th>
+                    <th scope="col">Días restantes </th>
+                    <th scope="col">Inicio de Periodo</th>
+                    <th scope="col">Fin de Periodo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ins in ViewBag.SaldoDeVacaciones)
+               {
+                   <tr>
+                       <td>@ins.SVId</td>
+                       <td>@ins.SVEmpleados.EmpNumero</td>
+                       <td>@ins.SVEmpleados.EmpNombreCompleto</td>
+                       <td>@ins.SVEmpleados.EmpFechaIngreso.ToShortDateString()</td>
+                       <td>@ins.SVFechaRegistro.ToShortDateString()</td>
+                       <td>@ins.SVAniosAntiguedad</td>
+                       <td>@ins.SVEjercicio</td>
+                       <td>@ins.SVDiasDisfrutados</td>
+                       <td>@ins.SVDiasRestantes</td>
+                       <td>@ins.SVPeriodos.PerFechaDesde.ToShortDateString()</td>
+                       <td>@ins.SVPeriodos.PerFechaHasta.ToShortDateString()</td>
+                   </tr>
+               }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="Add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:35em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Registro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddSaldoDeVacaciones" asp-controller="SaldoDeVacaciones" asp-action="Add" method="POST">
+                    <div class="form-group row">
+                        
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Fecha</label><br />
+                            <input type="date" class="form-control col-sm-10 col-form-label" name="SVFechaRegistro" id="SVFechaRegistro" readonly> <br />
+                        </div>
+                        
+                        <div class="col-sm-10 mx-auto">
+                             <label class="col-sm-2 col-form-label">Número de nómina del empleado</label><br />
+                            <input type="Number" class="form-control col-sm-10 col-form-label" name="SVEmpId" id="SVEmpId"   required> <br />
+                        </div>
+                        
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Ejercicio</label><br />
+                            <input type="Number" class="form-control col-sm-10 col-form-label" name="SVEjercicio" id="SVEjercicio" maxlength="5"  required> <br />
+                        </div>
+                        
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Seleccione el periodo</label><br />
+                                <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.PeriodosC" id="SVPeriodoId" name="SVPeriodoId" required> 
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select> <br />
+                        </div>
+                        
+                        <div class="col-sm-10 mx-auto">
+                            <label class="col-sm-2 col-form-label">Días a disfrutar</label><br />
+                            <input type="number" class="form-control col-sm-10 col-form-label" name="SVDiasDisfrutados" id="SVDiasDisfrutados"  required> <br />
+                        </div>
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddSaldoDeVacaciones" onclick="AddSaldoDeVacaciones()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*DETALLES YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="Details" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:55em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Registro</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="DetailsHistorialVacaciones" asp-controller="HistorialVacaciones" asp-action="Details" method="POST">
+                    <div class="form-group row">
+                        <div class="t-container">
+                            
+                         <div class="t-container">
+                 <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos del empleado</li>  
+                    <li class="t-tab">Solicitud de vacaciones</li> 
+                    <li class="t-tab">Vacaciones pendientes</li>  
+                </ul>
+                <ul class="t-contents">
+                    <li class="t-content">
+                        <table class="table table-borderless" id="table3">
+                        <tbody>
+                            <tr>
+                                <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label"> Empleado</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVEmpIdD" id="HVEmpIdD" readonly>
+                        </div>
+                                </td>
+                                </tr>
+                                <tr>
+                                <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Puesto</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVPuestoIdD" id="HVPuestoIdD" readonly>
+                        </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Sucursal</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVSucursalIdD" id="HVSucursalIdD" readonly>
+                        </div>
+                                </td>
+                                </tr>
+                                <tr>
+                                <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Antigüedad</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVAntiguedadIdD" id="HVAntiguedadIdD" readonly>
+                        </div>
+                                </td>
+                            </tr>
+                           
+                        </tbody>
+                        </table>
+                    </li>
+                    <li class="t-content">
+                    <table class="table table-borderless" id="table3">
+                    <tbody>
+                    <tr>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Días Solicitados</label>
+                            <input type="number" class="form-control col-sm-10 col-form-label" name="HVDiasSolicitadosD" id="HVDiasSolicitadosD" readonly>
+                        </div>
+                        </td>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Ejercicio (Año)</label>
+                            <input type="number" class="form-control col-sm-12 col-form-label" name="HVEjercicioD" id="HVEjercicioD" readonly>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Fecha de Solicitud</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVFechaSolicitudD" id="HVFechaSolicitudD" readonly>
+                        </div>
+                        </td>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Fecha de Inicio</label>
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="HVFechaInicioD" id="HVFechaInicioD" readonly>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Fecha de culminación</label><br />
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVFechaCulminacionD" id="HVFechaCulminacionD" readonly>
+                        </div>
+                        </td>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Fecha de Presentación</label>
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="HVFechaPresentacionD" id="HVFechaPresentacionD" readonly>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Folio del registro de la incidencia</label>
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="HVReInciIdD" id="HVReInciIdD" readonly>
+
+                        </div>
+                                </td>
+                    </tr>
+                    </tbody>
+                    </table>
+                    </li>
+                    <li class="t-content">
+                    <table class="table table-borderless" id="table3">
+                    <tbody>
+                    <tr>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Vacaciones pendientes del ejercicio actual</label>
+                            <input type="number" class="form-control col-sm-12 col-form-label" name="HVVacacionesPendientesEjercicioActualD" id="HVVacacionesPendientesEjercicioActualD" readonly>
+                        </div>
+                            </td>
+                        <td><div class="col-sm-10">
+                                <label class="col-sm-2 col-form-label">Vacaciones pendientes de ejercicios pasados</label>
+                            <input type="number" class="form-control col-sm-12 col-form-label" name="HVVacacionesPendientesEjerciciosPasadosD" id="HVVacacionesPendientesEjerciciosPasadosD" readonly>
+                        </div>
+                        </td>
+                    </tr>                    
+                    </tbody>
+                    </table>
+                    </li>
+                </ul>
+                        </div>
+                    
+                            </div> <!-- AQUI TERMINAN LAS PESTAÑAS-->
+                        </div>
+                    <div class="form-group float-right">
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+            <!-- ******* SECCIÓN DE JAVASCRIPT ******* -->
+
+<script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+<script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="~/js/custom/data-table.js"></script>
+<script src="~/js/SaldoDeVacaciones/SaldoDeVacaciones.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>

@@ -1,0 +1,859 @@
+﻿@model IEnumerable<NucleoRH.Models.CatEmpleados>
+@{ ViewData["Title"] = "Empleados"; }
+
+<style>
+
+    #table3 thead tr th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: #ffffff;
+    }
+
+    .table-responsive {
+        height: 200px;
+        overflow: scroll;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.12/js/i18n/defaults-es_ES.min.js"></script>
+
+<div class="dt-card dt-card__full-height">
+    <div class="dt-card__header" style="justify-self">
+        <h4 class="mb--15">Empleados</h4>
+        <div>
+            <button class="btn btn-success" data-toggle="modal" data-target="#Add" id="btnAgregarEmpleado">Agregar Empleado</button>
+        </div>
+    </div>
+    <div class="card-body" style="overflow:scroll">       
+        <table class="table" id="table3">
+            <thead>
+                <tr>
+                    
+                    <th scope="col">Número de Empleado</th>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellido Paterno</th>
+                    <th scope="col">Apellido Materno</th>
+                    <th scope="col">Puesto</th>
+                    <th scope="col">Sucursal</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ins in ViewBag.Empleados)
+               {
+                   <tr>
+                      
+                       <td>@ins.EmpNumero</td>
+                       <td>@ins.EmpNombre</td>
+                       <td>@ins.EmpPaterno</td>
+                       <td>@ins.EmpMaterno</td>
+                       <td>@ins.EmpPuesto.PuestoDescripcion</td>
+                       <td>@ins.EmpSucu.SucuNombre</td>
+                       <td>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Detalles" onclick="OpenModalDetails(@ins.EmpId)"><i class="material-icons text-info ">search</i></a>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Editar" onclick="OpenModalEdit(@ins.EmpId)"><i class="material-icons text-warning EditarEmpleado" >edit</i></a>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Eliminar" onclick="DeleteEmpleados(@ins.EmpId)"><i class="material-icons text-danger EliminarEmpleado">delete</i></a>
+            <a href="" data-toggle="tooltip" data-placement="top" title="Generar Credenciales" onclick="OpenModalCredenciales(@ins.EmpId)"><i class="material-icons text-orange AgregarCredenciales">login</i></a>
+                       </td>
+                   </tr>
+               }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@*Agregar YA MOSTRANDO EL MODAL*@
+<div class="modal fade" id="Add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="width:90vw; max-width:900px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Empleado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddEmpleados" asp-controller="Empleados" asp-action="Add" method="POST" class="row justify-content-center">
+                    
+                        <div class="t-container">
+                 <ul class="t-tabs row justify-content-center">  
+                    <li class="t-tab">Datos Generales</li>  
+                    <li class="t-tab">Información laboral</li> 
+                    <li class="t-tab">Datos de la empresa</li>  
+                </ul>
+                <ul class="t-contents">
+                    <li class="t-content">
+                        <table class="table" id="table3">
+                        <tbody>
+                            <tr class="col">
+                                <td class="col-6"><label class=" col-form-label">Número de Empleado</label>
+                                <div >
+                                <input type="number" class="form-control  col-form-label" name="EmpNumero" id="EmpNumero" maxlength="50" placeholder="Número de Empleado" autocomplete="off" required>
+                                </div>
+                                </td>
+                                <td class="col-6"><label class=" col-form-label">Nombre Empleado</label>
+                                <div >
+                                <input type="text" class="form-control  col-form-label" name="EmpNombre" id="EmpNombre" maxlength="50" placeholder="Nombre Empleado" autocomplete="off" required>
+                                </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label class=" col-form-label">Apellido Paterno</label>
+                                    <div >
+                                    <input type="text" class="form-control  col-form-label" name="EmpPaterno" id="EmpPaterno" maxlength="50" placeholder="Apellido Paterno" autocomplete="off" required>
+                                    </div>
+                                </td>
+                                <td><label class=" col-form-label">Apellido Materno</label>
+                                    <div >
+                                     <input type="text" class="form-control col-form-label" name="EmpMaterno" id="EmpMaterno" maxlength="50" placeholder="Apellido Materno" autocomplete="off" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label class=" col-form-label">Número Teléfono</label>
+                                <div >
+                                <input type="text" class="form-control  col-form-label" name="EmpTelefono" id="EmpTelefono" maxlength="50" placeholder="Número de teléfono" autocomplete="off" required>
+                                </div>
+                                </td>
+                                <td><label class=" col-form-label">Número Celular</label>
+                                    <div >
+                                    <input type="text" class="form-control col-form-label" name="EmpCelular" id="EmpCelular" maxlength="50" placeholder="Número de Celular" autocomplete="off" required>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label class=" col-form-label">Correo Electrónico</label>
+                                    <div >
+                                    <input type="email" class="form-control  col-form-label" name="EmpEmail" id="EmpEmail" maxlength="50" placeholder="Email" autocomplete="off" >
+                                    </div>
+                                </td>
+                                <td>
+                                    <label class=" col-form-label">Alias</label>
+                                    <div >
+                                    <input type="text" class="form-control  col-form-label" name="EmpAlias" id="EmpAlias" maxlength="50" placeholder="Alias del Empleado" autocomplete="off" required>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </li>
+                    <li class="t-content">
+                    <table class="table" id="table3">
+                    <tbody>
+                    <tr class="col">
+                        <td class="col-6"><label class=" col-form-label">Fecha de Ingreso</label>
+                            <div >
+                            <input type="date" class="form-control  col-form-label" name="EmpFechaIngreso" id="EmpFechaIngreso" maxlength="50" placeholder="Fecha de Ingreso" autocomplete="off" required>
+                        </div>
+                        </td>
+                        <td class="col-6"><label class=" col-form-label">Ingrese el RFC</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpRfc" id="EmpRfc" maxlength="50" placeholder="RFC" autocomplete="off" required>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese el CURP</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpCurpA" id="EmpCurpA" maxlength="50" placeholder="CURP" autocomplete="off" required>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Número de IMSS</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpImss" id="EmpImss" maxlength="50" placeholder="IMSS" autocomplete="off" required>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Escolaridad</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Esco" id="EmpEscoId" name="EmpEscoId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Estado Civil</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.EstadoCivil" id="EmpEdocId" name="EmpEdocId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Sexo</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Sex" id="EmpSexId" name="EmpSexId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                    </table>
+                    </li>
+                    <li class="t-content">
+                    <table class="table" id="table3">
+                    <tbody>
+                    <tr class="col">
+                        <td class="col-6"><label class=" col-form-label">Ingrese Estatus</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Estatus" id="EmpEstId" name="EmpEstId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select></div>
+                            </td>
+                        <td class="col-6"><label class=" col-form-label">Ingrese Comentarios</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpComentarios" id="EmpComentarios" maxlength="50" placeholder="Comentarios" autocomplete="off">
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Sucursal</label>
+                            <div >
+                            <select class="form-control col-form-label" asp-items="ViewBag.Sucursal" id="EmpSucuId" name="EmpSucuId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Patrón</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Patron" id="EmpPatId" name="EmpPatId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Puesto</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Puesto" id="EmpPuestoId" name="EmpPuestoId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Jornada</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Jorna" id="EmpJornaId" name="EmpJornaId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Tipo de Trabajo</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.TrabTipo" id="EmpTrabTipoId" name="EmpTrabTipoId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        
+                        <td><label class=" col-form-label">Ingrese Turno</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Turno" id="EmpTurId" name="EmpTurId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Fecha de Nacimiento</label>
+                            <div >
+                            <input type="date" class="form-control  col-form-label" name="EmpNacFecha" id="EmpNacFecha" maxlength="50" autocomplete="off" required>
+                        </div></td>
+                        <td><label class=" col-form-label">Lugar de Nacimiento</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Estado" id="DomiEstaId" name="DomiEstaId" onchange="SeleccionarEstado();" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese el Municipio</label>
+                            <div >
+                            <select class="form-control  col-form-label"  id="EmpNacMunicId" name="EmpNacMunicId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Vacunación</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Vacuna" id="EmpVacId" name="EmpVacId" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        
+                    </tr>
+                    
+                    </tbody>
+                    </table>
+                    </li>
+                </ul>
+                        </div>
+                    
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddEmpleados" onclick="AddEmpleados()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Editar FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Edit" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:65em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Empleado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="EditEmpleados" asp-controller="Empleados" asp-action="EditEmpleados" method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdE" name="IdE" />
+                    
+                    <div class="t-container">
+  <ul class="t-tabs row justify-content-center">  
+    <li class="t-tab">Datos Generales</li>  
+    <li class="t-tab">Información laboral</li> 
+    <li class="t-tab">Datos de la empresa</li>  
+  </ul>
+  <ul class="t-contents">
+    <li class="t-content">
+            <table class="table" id="table3">
+            <tbody>
+                    <tr>
+                       <td><label class=" col-form-label">Número de Empleado</label>
+                           <div >
+                           <input type="number" class="form-control  col-form-label" name="EmpNumeroE" id="EmpNumeroE" maxlength="50" placeholder="Número de Empleado" autocomplete="off" required>
+                           </div>
+                       </td>
+                       <td><label class=" col-form-label">Nombre Empleado</label>
+                           <div >
+                           <input type="text" class="form-control  col-form-label" name="EmpNombreE" id="EmpNombreE" maxlength="50" placeholder="Nombre Empleado" autocomplete="off" required>
+                           </div>
+                       </td>
+                       
+                    </tr>
+                    <tr>
+                       <td><label class=" col-form-label">Apellido Paterno</label>
+                           <div class="">
+                           <input type="text" class="form-control  col-form-label" name="EmpPaternoE" id="EmpPaternoE" maxlength="50" placeholder="Apellido Paterno" autocomplete="off" required>
+                           </div></td>
+                       <td><label class=" col-form-label">Apellido Materno</label>
+                           <div >
+                           <input type="text" class="form-control  col-form-label" name="EmpMaternoE" id="EmpMaternoE" maxlength="50" placeholder="Apellido Materno" autocomplete="off" required>
+                           </div>
+                       </td>
+                    </tr>
+                    <tr>
+                       <td><label class=" col-form-label">Número Teléfono</label>
+                           <div >
+                           <input type="text" class="form-control  col-form-label" name="EmpTelefonoE" id="EmpTelefonoE" maxlength="50" placeholder="Número de teléfono" autocomplete="off" required>
+                           </div>
+                       </td>
+                       <td><label class=" col-form-label">Número Celular</label>
+                           <div>
+                           <input type="text" class="form-control  col-form-label" name="EmpCelularE" id="EmpCelularE" maxlength="50" placeholder="Número de Celular" autocomplete="off" required>
+                           </div>
+                       </td>
+                    </tr>
+                    <tr>
+                       
+                       <td>
+                           <label class=" col-form-label">Correo Electrónico</label><div >
+                           <input type="email" class="form-control  col-form-label" name="EmpEmailE" id="EmpEmailE" maxlength="50" placeholder="Email" autocomplete="off" required>
+                           </div>
+                       </td>
+                       <td>
+                                    <label class=" col-form-label">Alias</label>
+                                    <div >
+                                    <input type="text" class="form-control col-form-label" name="EmpAliasE" id="EmpAliasE" maxlength="50" placeholder="Alias del Empleado" autocomplete="off" required>
+                                    </div>
+                                </td>
+                    </tr>
+            </tbody>
+            </table>
+    </li>
+    <li class="t-content">
+                <table class="table" id="table3">
+                <tbody>
+                    <tr>
+                        <td><label class=" col-form-label">Fecha de Ingreso</label>
+                            <div >
+                            <input type="datetime" class="form-control col-form-label" name="EmpFechaIngresoE" id="EmpFechaIngresoE" maxlength="50" placeholder="Fecha de Ingreso" autocomplete="off" required>
+                        </div>
+                        </td>
+                        
+                        <td><label class=" col-form-label">Ingrese el RFC</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpRfcE" id="EmpRfcE" maxlength="50" placeholder="RFC" autocomplete="off" required>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese el CURP</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpCurpE" id="EmpCurpE" maxlength="50" placeholder="CURP" autocomplete="off" required>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Número de IMSS</label>
+                            <div >
+                            <input type="text" class="form-control  col-form-label" name="EmpImssE" id="EmpImssE" maxlength="50" placeholder="IMSS" autocomplete="off" required>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Escolaridad</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Esco" id="EmpEscoIdE" name="EmpEscoIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Estado Civil</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.EstadoCivil" id="EmpEdocIdE" name="EmpEdocIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Sexo</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Sex" id="EmpSexIdE" name="EmpSexIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+                        </li>
+    <li class="t-content">
+                <table class="table" id="table3">
+                <tbody>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Estatus</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Estatus" id="EmpEstIdE" name="EmpEstIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Comentarios</label>
+                            <div >
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpComentariosE" id="EmpComentariosE" maxlength="50" placeholder="Comentarios" autocomplete="off">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Sucursal</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Sucursal" id="EmpSucuIdE" name="EmpSucuIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Patrón</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Patron" id="EmpPatIdE" name="EmpPatIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese Puesto</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Puesto" id="EmpPuestoIdE" name="EmpPuestoIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Jornada</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Jorna" id="EmpJornaIdE" name="EmpJornaIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Tipo de Trabajo</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.TrabTipo" id="EmpTrabTipoIdE" name="EmpTrabTipoIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        
+                        <td><label class=" col-form-label">Ingrese Turno</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Turno" id="EmpTurIdE" name="EmpTurIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Fecha de Nacimiento</label>
+                            <div >
+                            <input type="datetime" class="form-control  col-form-label" name="EmpNacFechaE" id="EmpNacFechaE" maxlength="50" autocomplete="off" required>
+                            </div>
+                        </td>
+                        <td><label class=" col-form-label">Lugar de Nacimiento</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Estado" id="DomiEstaIdE" name="DomiEstaIdE" onchange="SeleccionarEstadoE();" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class=" col-form-label">Ingrese el Municipio</label>
+                            <div >
+                            <select class="form-control col-form-label" asp-items="ViewBag.Municipio" id="EmpNacMunicIdE" name="EmpNacMunicIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class=" col-form-label">Ingrese Vacunación</label>
+                            <div >
+                            <select class="form-control  col-form-label" asp-items="ViewBag.Vacuna" id="EmpVacIdE" name="EmpVacIdE" required>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        
+                    </tr>
+                   
+                </tbody>
+                </table>
+    </li>
+  </ul>
+                    </div>
+                    
+                    <div class="form-group float-right">
+                        <button type="button" id="btnEditEmpleadoss" onclick="EditEmpleados()" class="btn btn-success">Guardar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+@*DETALLES FORMULARIO YA EN MODAL*@
+<div class="modal fade" id="Details" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Empleado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="DetailsEmpleados" asp-controller="Empleados"  method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdD" name="IdD" />
+                    <div class="form-group row">
+
+                        <div class="t-container">
+  <ul class="t-tabs row justify-content-center">  
+    <li class="t-tab">Datos Generales</li>  
+    <li class="t-tab">Información laboral</li> 
+    <li class="t-tab">Datos de la empresa</li>  
+  </ul>
+  <ul class="t-contents">
+    <li class="t-content">
+
+            <table class="table" id="table3">
+            <tbody>
+                <tr>
+                    <td><label class="col-sm-2 col-form-label">Número de Empleado</label>
+                        <div class="col-sm-10">
+                        <input type="number" class="form-control col-sm-12 col-form-label" name="EmpNumeroD" id="EmpNumeroD" maxlength="50" placeholder="Número de Empleado" autocomplete="off" readonly>
+                        </div>
+                        </td>
+                    <td><label class="col-sm-2 col-form-label">Nombre Empleado</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control col-sm-12 col-form-label" name="EmpNombreD" id="EmpNombreD" maxlength="50" placeholder="Nombre Empleado" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><label class="col-sm-2 col-form-label">Apellido Paterno</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control col-sm-12 col-form-label" name="EmpPaternoD" id="EmpPaternoD" maxlength="50" placeholder="Apellido Paterno" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td><label class="col-sm-2 col-form-label">Apellido Materno</label>
+                       <div class="col-sm-10">
+                       <input type="text" class="form-control col-sm-12 col-form-label" name="EmpMaternoD" id="EmpMaternoD" maxlength="50" placeholder="Apellido Materno" autocomplete="off" readonly>
+                       </div>
+                    </td>
+                </tr>
+                <tr>
+                       
+                    <td><label class="col-sm-2 col-form-label">Número Teléfono</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control col-sm-12 col-form-label" name="EmpTelefonoD" id="EmpTelefonoD" maxlength="50" placeholder="Número de teléfono" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td><label class="col-sm-2 col-form-label">Número Celular</label>
+                        <div class="col-sm-10">
+                        <input type="text" class="form-control col-sm-12 col-form-label" name="EmpCelularD" id="EmpCelularD" maxlength="50" placeholder="Número de Celular" autocomplete="off" readonly>
+                        </div></td>
+                   </tr>
+                    <tr>
+                    <td>
+                        <label class="col-sm-2 col-form-label">Correo Electrónico</label><div class="col-sm-10">
+                        <input type="email" class="form-control col-sm-12 col-form-label" name="EmpEmailD" id="EmpEmailD" maxlength="50" placeholder="Email" autocomplete="off" readonly>
+                        </div>
+                    </td>
+                    <td>
+                                    <label class="col-sm-2 col-form-label">Alias</label>
+                                    <div class="col-sm-10">
+                                    <input type="text" class="form-control col-sm-12 col-form-label" name="EmpAliasD" id="EmpAliasD" maxlength="50" placeholder="Alias del Empleado" autocomplete="off" required>
+                                    </div>
+                                </td>
+                    </tr>
+            </tbody>
+            </table>
+    </li>
+    <li class="t-content">
+                <table class="table" id="table3">
+                <tbody>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Fecha de Ingreso</label>
+                            <div class="col-sm-10">
+                            <input type="date" class="form-control col-sm-12 col-form-label" name="EmpFechaIngresoD" id="EmpFechaIngresoD" maxlength="50" placeholder="Fecha de Ingreso" autocomplete="off" readonly>
+                            </div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Ingrese el RFC</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpRfcD" id="EmpRfcD" maxlength="50" placeholder="RFC" autocomplete="off" readonly>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese el CURP</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpCurpD" id="EmpCurpD" maxlength="50" placeholder="CURP" autocomplete="off" readonly>
+                            </div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Número de IMSS</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpImssD" id="EmpImssD" maxlength="50" placeholder="IMSS" autocomplete="off" readonly>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Escolaridad</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Esco" id="EmpEscoIdD" name="EmpEscoIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Estado Civil</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.EstadoCivil" id="EmpEdocIdD" name="EmpEdocIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Sexo</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Sex" id="EmpSexIdD" name="EmpSexIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+                </table>
+    </li>
+    <li class="t-content">
+                <table class="table" id="table3">
+                <tbody>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Estatus</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-8 col-form-label" asp-items="ViewBag.Estatus" id="EmpEstIdD" name="EmpEstIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select></div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Comentarios</label>
+                            <div class="col-sm-10">
+                            <input type="text" class="form-control col-sm-12 col-form-label" name="EmpComentariosD" id="EmpComentariosD" maxlength="50" placeholder="Comentarios" autocomplete="off" readonly>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Sucursal</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-8 col-form-label" asp-items="ViewBag.Sucursal" id="EmpSucuIdD" name="EmpSucuIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Patrón</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Patron" id="EmpPatIdD" name="EmpPatIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Puesto</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-8 col-form-label" asp-items="ViewBag.Puesto" id="EmpPuestoIdD" name="EmpPuestoIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Jornada</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Jorna" id="EmpJornaIdD" name="EmpJornaIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Tipo de Trabajo</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-8 col-form-label" asp-items="ViewBag.TrabTipo" id="EmpTrabTipoIdD" name="EmpTrabTipoIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        
+                        <td><label class="col-sm-2 col-form-label">Ingrese Turno</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Turno" id="EmpTurIdD" name="EmpTurIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Fecha de Nacimiento</label>
+                            <div class="col-sm-10">
+                            <input type="date" class="form-control col-sm-8 col-form-label" name="EmpNacFechaD" id="EmpNacFechaD" maxlength="50" autocomplete="off" readonly>
+                        </div></td>
+                        <td><label class="col-sm-2 col-form-label">Lugar de Nacimiento</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Estado" id="DomiEstaIdD" name="DomiEstaIdD" onchange="SeleccionarEstado();" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label class="col-sm-2 col-form-label">Ingrese el Municipio</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-8 col-form-label" asp-items="ViewBag.Municipio" id="EmpNacMunicIdD" name="EmpNacMunicIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                        <td><label class="col-sm-2 col-form-label">Ingrese Vacunación</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-12 col-form-label" asp-items="ViewBag.Vacuna" id="EmpVacIdD" name="EmpVacIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr><td><label class="col-sm-2 col-form-label">Ingrese el usuario</label>
+                            <div class="col-sm-10">
+                            <select class="form-control col-sm-10 col-form-label" asp-items="ViewBag.Usuarios" id="EmpUserIdD" name="EmpUserIdD" readonly>
+                                <option selected disabled value="">Seleccione una opción</option>
+                            </select>
+                        </div></td></tr>
+                </tbody>
+                </table>
+                    </li>
+  </ul>
+                            </div>
+                    </div>
+                    <div class="form-group float-right">
+                        <button data-dismiss="modal" class="btn btn-danger">Cerrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 
+
+
+@*MODAL DE CREACIÓN DE CREDENCIALES*@
+<div class="modal fade" id="Credenciales" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" style="max-width:45em;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CREACIÓN DE CREDENCIALES DE ACCESO</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="AddUsuario" asp-controller="Usuarios"  method="POST">
+                    <input type="hidden" />
+                    <input type="hidden" id="IdU" name="IdU" />
+                    <div class="form-group row">
+
+                     <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Número de nómina</label><br />
+                            <input type="number" class="form-control col-sm-10 col-form-label" name="NoNomina" id="NoNomina" maxlength="50" placeholder="Número de nómina" autocomplete="off" required>
+                        </div>
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Correo</label><br />
+                            <input type="text" class="form-control col-sm-10 col-form-label" name="UserCorreo" id="UserCorreo" maxlength="50" placeholder="Correo Electrónico" autocomplete="off" required>
+                        </div>
+                        <div class="col-sm-10">
+                            <label class="col-sm-2 col-form-label">Contraseña</label><br />
+                            <input type="password" class="form-control col-sm-10 col-form-label" name="UserPassword" id="UserPassword" maxlength="50" placeholder="Password" autocomplete="off" required>
+                        </div>   
+                            
+                    </div>
+                    <div class="form-group float-right">
+                        <button type="button" id="btnAddUsuario" onclick="AddUsuarios()" class="btn btn-success">Agregar</button>
+                        <button data-dismiss="modal" class="btn btn-danger">Cerrar Modal</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> 
+
+<!-- ******* SECCIÓN DE JAVASCRIPT ******* -->
+
+<script src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+<script src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+<script src="~/js/custom/data-table.js"></script>
+<script src="~/js/Empleados/Empleados.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/jquery.validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.2/additional-methods.min.js"></script>
